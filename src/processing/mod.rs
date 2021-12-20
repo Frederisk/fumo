@@ -1,6 +1,8 @@
 use crate::Term;
 use clap::{ArgMatches, Error, ErrorKind};
 
+mod ascii_map; 
+
 const DISTRO_SMALL_MAX_SIZE: u16 = 20;
 const DISTRO_NORMAL_MAX_SIZE: u16 = 40;
 const DISTRO_LARGE_MAX_SIZE: u16 = 80;

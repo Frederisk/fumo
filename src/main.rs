@@ -1,7 +1,17 @@
-use clap::App;
+use clap::{Error, ErrorKind};
+use console::Term;
 
-fn main() {
-    let matches = App::new("fumo").version("0.1.0").get_matches();
+mod application;
+mod processing;
 
-    println!("Hello, world!");
+fn main() -> () {
+    let terminal = Term::buffered_stderr();
+    if !terminal.is_term() {
+        Error::with_description("Not a terminal", ErrorKind::Io).exit();
+    }
+
+    let application: clap::App = application::create_application();
+    let matches = application.get_matches();
+
+    processing::process_matches(matches, terminal);
 }

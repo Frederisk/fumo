@@ -1,11 +1,13 @@
+use std::collections::HashMap;
+
 use crate::Term;
 use clap::{ArgMatches, Error, ErrorKind};
 
-mod ascii_map; 
+mod ascii_map;
 
 const DISTRO_SMALL_MAX_SIZE: u16 = 20;
 const DISTRO_NORMAL_MAX_SIZE: u16 = 40;
-const DISTRO_LARGE_MAX_SIZE: u16 = 80;
+// const DISTRO_LARGE_MAX_SIZE: u16 = 80;
 
 enum DistroSize {
     Small,
@@ -54,13 +56,26 @@ fn parse_size(size: &str, terminal: &Term) -> DistroSize {
     }
 }
 
-fn print_fumo(terminal: Term, distro: &str, size: DistroSize) -> () {}
+fn print_fumo(terminal: Term, distro: &str, size: DistroSize) -> () {
+    let fumo_map = match size {
+        DistroSize::Large => HashMap::new(), // TODO: implement large size
+        DistroSize::Normal => ascii_map::ascii_normal(),
+        DistroSize::Small => HashMap::new(), // TODO: implement small size
+    };
+    if let Some(fumo) = fumo_map.get(distro) {
+        fn fail_to_print_and_exit(err: std::io::Error) -> () {
+            Error::with_description(
+                format!("failed to write fumo: {}", err).as_str(),
+                ErrorKind::Io,
+            )
+            .exit();
+        }
 
-fn match_name(input: &str, name: &str) -> bool {
-    // name.split('_'); TODO: implement
-    if name == input {
-        true
+        terminal
+            .write_line(fumo)
+            .unwrap_or_else(fail_to_print_and_exit);
+        terminal.flush().unwrap_or_else(fail_to_print_and_exit);
     } else {
-        false
+        Error::with_description("invalid `ascii_distro` value", ErrorKind::InvalidValue).exit();
     }
 }

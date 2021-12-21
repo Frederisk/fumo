@@ -7,7 +7,7 @@ description = "Fumo is a tool for printing the ascii art of fumos."
 readme = "README.md"
 repository = "https://github.com/Frederisk/fumo.git"
 license = "MIT"
-license_file = "LICENSE.txt"
+# license_file = "LICENSE.txt"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

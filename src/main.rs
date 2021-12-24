@@ -4,7 +4,7 @@ use console::Term;
 mod application;
 mod processing;
 
-fn main() -> () {
+fn main() {
     let terminal = Term::buffered_stderr();
     if !terminal.is_term() {
         Error::with_description("Not a terminal", ErrorKind::Io).exit();

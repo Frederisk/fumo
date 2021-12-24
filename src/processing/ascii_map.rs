@@ -40,7 +40,7 @@ pub fn ascii_normal<'a, 'b>() -> HashMap<&'a str, &'b str> {
 
 #[cfg(test)]
 mod fumo_ascii_tests {
-    use crate::processing::DISTRO_NORMAL_MAX_SIZE;
+    use crate::processing::DistroSize;
 
     use super::*;
 
@@ -48,7 +48,7 @@ mod fumo_ascii_tests {
     fn test_ascii_normal() {
         ascii_normal().values().for_each(|fumo| {
             fumo.lines()
-                .for_each(|line| assert!(line.len() <= DISTRO_NORMAL_MAX_SIZE))
+                .for_each(|line| assert!(line.len() <= DistroSize::Normal as usize));
         })
     }
 

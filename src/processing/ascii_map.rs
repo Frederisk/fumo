@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 pub fn ascii_normal<'a, 'b>() -> HashMap<&'a str, &'b str> {
-    HashMap::<&str, &str>::from([
+    [
         (
             "hakurei_reimu",
             r#"                              __<====>
@@ -67,7 +67,8 @@ _-- |||***|------    -------|****|-__...
      --____-          \__  __/
                          --"#,
         ),
-    ])
+    ]
+    .into()
 }
 
 #[cfg(test)]
@@ -78,10 +79,15 @@ mod fumo_ascii_tests {
 
     #[test]
     fn test_ascii_normal() {
-        ascii_normal().values().for_each(|fumo| {
-            fumo.lines()
-                .for_each(|line| assert!(line.len() <= DistroSize::Normal as usize));
-        })
+        ascii_normal()
+            .values()
+            .map(ToOwned::to_owned)
+            .map(str::lines)
+            .for_each(|lines| {
+                lines.map(str::len).for_each(|length: usize| {
+                    assert!(length <= DistroSize::Normal as usize);
+                });
+            });
     }
 
     #[test]

@@ -1,5 +1,5 @@
-use crate::Term;
 use clap::{ArgMatches, Error, ErrorKind};
+use console::Term;
 use os_info::Type;
 use std::{borrow::Cow, collections::HashMap};
 
@@ -77,21 +77,25 @@ pub fn process_matches(matches: ArgMatches, terminal: Term) {
 
     lines
         .into_iter()
-        // .map(|line| {
-        //     if let Some(width) = terminal_width {
-        //         if line.len() > width as usize {
-        //             let line: &str = line.borrow();
-        //             return Cow::Owned(line.chars().take(width as usize).collect::<String>());
-        //         }
-        //     }
-        //     line
-        // })
-        .map(|line| -> String {
-            line.as_ref()
-                .chars()
-                .take(terminal_width.unwrap_or(u16::MAX) as usize)
-                .collect()
+        .map(|line| -> Cow<str> {
+            if let Some(width) = terminal_width {
+                if line.len() > width as usize {
+                    return line
+                        .as_ref()
+                        .chars()
+                        .take(width as usize)
+                        .collect::<String>()
+                        .into();
+                }
+            }
+            line
         })
+        // .map(|line| -> String {
+        //     line.as_ref()
+        //         .chars()
+        //         .take(terminal_width.unwrap_or(u16::MAX) as usize)
+        //         .collect()
+        // })
         .for_each(|line| terminal.write_line(line.as_ref()).unwrap());
 
     terminal.flush().unwrap();

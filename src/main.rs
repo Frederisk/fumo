@@ -10,7 +10,7 @@ fn main() {
         Error::with_description("Not a terminal", ErrorKind::Io).exit();
     }
 
-    let application: clap::App = application::create_application();
+    let application = application::create_application();
     let matches = application.get_matches();
 
     processing::process_matches(matches, terminal);

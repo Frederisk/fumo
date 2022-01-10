@@ -1,7 +1,7 @@
 use clap::{ArgMatches, Error, ErrorKind};
 use console::Term;
 use os_info::Type;
-use std::{borrow::Cow, collections::HashMap};
+use std::borrow::Cow;
 
 mod ascii_map;
 
@@ -19,12 +19,11 @@ pub fn process_matches(matches: ArgMatches, terminal: Term) {
         .value_of("ascii_distro")
         .unwrap_or_else(get_default_fumo_name);
     let is_disable_info = matches.is_present("disable_info");
-    let terminal_width = if let Some((_, c)) = terminal.size_checked() {
-        Some(c)
+    let terminal_width = if let Some((_, column)) = terminal.size_checked() {
+        Some(column)
     } else {
         None
     };
-
     let size = parse_size(
         matches.value_of("size").unwrap(),
         &terminal_width,
@@ -41,41 +40,39 @@ pub fn process_matches(matches: ArgMatches, terminal: Term) {
         for i in 0..line_num {
             lines.push(Cow::Owned(format!(
                 "{:<width$}  {}",
-                fumo_lines.get(i).unwrap_or(&Cow::from("")),
-                info_lines.get(i).unwrap_or(&String::from("")),
+                fumo_lines.get(i).unwrap_or(&"".into()),
+                info_lines.get(i).unwrap_or(&"".into()),
                 width = size as usize // `size` copied here
             )));
         }
         lines
     };
-    // lines
-    //     .iter()
-    //     .map(|line| -> Cow<Cow<str>> {
-    //         // substring the line by black magic.
-    //         if let Some(width) = terminal_width {
-    //             if line.len() > width as usize {
-    //                 let line: &str = line.borrow();
-    //                 Cow::Owned(Cow::Owned(
-    //                     line.chars().take(width as usize).collect::<String>(),
-    //                 ))
-    //             } else {
-    //                 Cow::Borrowed(line)
-    //             }
-    //         } else {
-    //             Cow::Borrowed(line)
-    //         }
-    //     })
-    //     .for_each(|line| {
-    //         // i don't know how is it works, but it actually works.
-    //         terminal
-    //             .write_line({
-    //                 let line: &Cow<str> = line.borrow();
-    //                 line.borrow()
-    //             })
-    //             .unwrap()
-    //     });
-
     lines
+        // .iter()
+        // .map(|line| -> Cow<Cow<str>> {
+        //     // substring the line by black magic.
+        //     if let Some(width) = terminal_width {
+        //         if line.len() > width as usize {
+        //             let line: &str = line.borrow();
+        //             Cow::Owned(Cow::Owned(
+        //                 line.chars().take(width as usize).collect::<String>(),
+        //             ))
+        //         } else {
+        //             Cow::Borrowed(line)
+        //         }
+        //     } else {
+        //         Cow::Borrowed(line)
+        //     }
+        // })
+        // .for_each(|line| {
+        //     // i don't know how is it works, but it actually works.
+        //     terminal
+        //         .write_line({
+        //             let line: &Cow<str> = line.borrow();
+        //             line.borrow()
+        //         })
+        //         .unwrap()
+        // });
         .into_iter()
         .map(|line| -> Cow<str> {
             if let Some(width) = terminal_width {
@@ -97,7 +94,6 @@ pub fn process_matches(matches: ArgMatches, terminal: Term) {
         //         .collect()
         // })
         .for_each(|line| terminal.write_line(line.as_ref()).unwrap());
-
     terminal.flush().unwrap();
 }
 
@@ -109,7 +105,7 @@ fn get_default_fumo_name<'a>() -> &'a str {
         Type::Android => todo!(),
         Type::Arch => todo!(),
         Type::CentOS => todo!(),
-        Type::Debian => todo!(),
+        Type::Debian => "saigyouji_yuyuko",
         Type::DragonFly => todo!(),
         Type::Emscripten => todo!(),
         Type::EndeavourOS => todo!(),
@@ -132,7 +128,7 @@ fn get_default_fumo_name<'a>() -> &'a str {
         Type::SUSE => todo!(),
         Type::Ubuntu => todo!(),
         Type::Unknown => todo!(),
-        Type::Windows => todo!(),
+        Type::Windows => "cirno",
         _ => todo!(),
     }
 }
@@ -196,9 +192,9 @@ fn parse_size(size: &str, width: &Option<u16>, is_disable_info: &bool) -> Distro
 fn get_fumo<'a>(distro: &str, size: &DistroSize) -> &'a str {
     // select a map.by size.
     let fumo_map = match size {
-        DistroSize::Large => HashMap::new(), // TODO: implement large size
+        DistroSize::Large => ascii_map::ascii_normal(), // TODO: implement large size
         DistroSize::Normal => ascii_map::ascii_normal(),
-        DistroSize::Small => HashMap::new(), // TODO: implement small size
+        DistroSize::Small => ascii_map::ascii_normal(), // TODO: implement small size
     };
     // try to get a fumo from map and print it.
     fumo_map.get(distro).unwrap_or_else(|| {

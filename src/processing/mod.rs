@@ -10,7 +10,7 @@ mod ascii_map;
 enum DistroSize {
     Small = 20,  // const DISTRO_SMALL_MAX_SIZE: usize = 20;
     Normal = 40, // const DISTRO_NORMAL_MAX_SIZE: usize = 40;
-    Large = 80,  // const DISTRO_LARGE_MAX_SIZE: usize = 80;
+    // Large = 80,  // const DISTRO_LARGE_MAX_SIZE: usize = 80;
 }
 
 pub fn process_matches(matches: ArgMatches, terminal: Term) {
@@ -160,7 +160,7 @@ fn get_default_fumo_name<'a>() -> &'a str {
 fn parse_size(size: &str, width: &Option<u16>, is_disable_info: &bool) -> DistroSize {
     match size {
         "small" => DistroSize::Small,
-        "large" => DistroSize::Large,
+        // "large" => DistroSize::Large,
         "normal" => DistroSize::Normal,
         "auto" => {
             // get terminal size and adjust it to a specific size.
@@ -172,11 +172,14 @@ fn parse_size(size: &str, width: &Option<u16>, is_disable_info: &bool) -> Distro
                 };
                 if column_num <= DistroSize::Small as u16 {
                     DistroSize::Small
-                } else if column_num <= DistroSize::Normal as u16 {
+                } else
+                // if column_num <= DistroSize::Normal as u16
+                {
                     DistroSize::Normal
-                } else {
-                    DistroSize::Large
                 }
+                // else {
+                //     // DistroSize::Large
+                // }
             // if terminal size is not available, use normal size.
             } else {
                 DistroSize::Normal
@@ -192,7 +195,7 @@ fn parse_size(size: &str, width: &Option<u16>, is_disable_info: &bool) -> Distro
 fn get_fumo<'a>(distro: &str, size: &DistroSize) -> &'a str {
     // select a map.by size.
     let fumo_map = match size {
-        DistroSize::Large => ascii_map::ascii_normal(), // TODO: implement large size
+        // DistroSize::Large => ascii_map::ascii_normal(), // TODO: implement large size
         DistroSize::Normal => ascii_map::ascii_normal(),
         DistroSize::Small => ascii_map::ascii_normal(), // TODO: implement small size
     };
